@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Reset & Dark Luxury Foundation ─────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* RGB channel values — required for Tailwind opacity modifiers (e.g. bg-gold-500/20) */
+  --c-void:        7 7 15;
+  --c-obsidian:    13 13 26;
+  --c-onyx:        18 18 31;
+  --c-graphite:    26 26 46;
+  --c-slate:       37 37 64;
+  --c-muted:       58 58 92;
+  /* Gold */
+  --c-gold-300:    245 200 66;
+  --c-gold-400:    232 184 32;
+  --c-gold-500:    201 160 48;
+  --c-gold-900:    58 42 8;
+  /* Crimson */
+  --c-crimson-400: 248 113 113;
+  --c-crimson-500: 239 68 68;
+  --c-crimson-900: 69 10 10;
+  /* Sapphire */
+  --c-sapphire-400: 96 165 250;
+  --c-sapphire-500: 59 130 246;
+  --c-sapphire-900: 12 20 69;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #07070F;
+  color: #E8E8F0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar styling ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0D1A;
+}
+::-webkit-scrollbar-thumb {
+  background: #3A3A5C;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ── Glass card component ────────────────────────────────────── */
+@layer components {
+  .glass-card {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .glass-card-gold {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(201, 160, 48, 0.2);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(201, 160, 48, 0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, #C9A030 0%, #E8C84A 50%, #C9A030 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium uppercase tracking-widest;
+  }
+
+  .status-ok {
+    @apply status-badge;
+    background: rgba(6, 78, 59, 0.5);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .status-stale {
+    @apply status-badge;
+    background: rgba(69, 26, 3, 0.5);
+    color: #FBBF24;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .status-oob {
+    @apply status-badge;
+    background: rgba(69, 10, 10, 0.5);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .status-interpolated {
+    @apply status-badge;
+    background: rgba(12, 20, 69, 0.5);
+    color: #60A5FA;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply nav-item;
+    background: rgba(201, 160, 48, 0.1);
+    color: #E8C84A;
+    border: 1px solid rgba(201, 160, 48, 0.2);
+  }
+
+  .nav-item-inactive {
+    @apply nav-item text-muted;
+  }
+  .nav-item-inactive:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .live-dot {
+    @apply w-2 h-2 rounded-full;
+    background: #34D399;
+    animation: livePulse 1.8s ease-in-out infinite;
+  }
+}
+
+/* ── Animations ──────────────────────────────────────────────── */
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #1A1A2E 25%, #252540 50%, #1A1A2E 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Chart overrides ─────────────────────────────────────────── */
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: #3A3A5C;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Alert banner glow ───────────────────────────────────────── */
+@keyframes criticalPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+}
+
+.alert-critical {
+  animation: criticalPulse 2s ease-in-out infinite;
+}

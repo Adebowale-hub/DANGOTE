@@ -1,0 +1,32 @@
+{
+  "name": "dcp-kpi-server",
+  "version": "1.0.0",
+  "description": "DCP Automated KPI Validation & Dashboard Pipeline — Backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "simulate": "node simulator/dataGenerator.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run simulate\"",
+    "sync:sheets": "node scripts/syncToSheets.js",
+    "sync:sheets:once": "node scripts/syncToSheets.js --once",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^173.0.0",
+    "mongoose": "^8.5.1",
+    "mqtt": "^5.9.1",
+    "net": "^1.0.2",
+    "node-cron": "^4.5.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4"
+  }
+}

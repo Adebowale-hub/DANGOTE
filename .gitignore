@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Google Service Account key — contains private key
+google-credentials.json
+google-credentials.json.json
+*.json.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
