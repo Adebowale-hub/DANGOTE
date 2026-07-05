@@ -22,3 +22,8 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Pitch deck — local submission artefacts, not part of the codebase
+generate_pptx.py
+DCP_KPI_PitchDeck.pptx
+*.pptx
