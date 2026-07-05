@@ -1,12 +1,74 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   AlertOctagon,
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Filter,
   XCircle,
+  Zap,
+  ChevronDown,
+  FlaskConical,
 } from 'lucide-react';
+
+const API = 'http://localhost:4000/api';
+
+const SCENARIOS = [
+  {
+    label: 'Critical Kiln',
+    severity: 'CRITICAL',
+    alertType: 'EFFICIENCY_CRITICAL',
+    plantId: 'IBESE-01',
+    machineId: 'KILN-A',
+    message: 'Kiln-A efficiency has dropped below critical threshold — immediate inspection required.',
+    efficiency: 58,
+    threshold: 65,
+    color: 'text-crimson-400',
+    bg: 'bg-crimson-900/20 hover:bg-crimson-900/35 border-crimson-500/30',
+  },
+  {
+    label: 'Warning Mill',
+    severity: 'WARNING',
+    alertType: 'EFFICIENCY_WARNING',
+    plantId: 'IBESE-01',
+    machineId: 'MILL-01',
+    message: 'Mill-01 output trending below acceptable range — schedule maintenance review.',
+    efficiency: 72,
+    threshold: 78,
+    color: 'text-amber-400',
+    bg: 'bg-amber-900/20 hover:bg-amber-900/35 border-amber-500/30',
+  },
+  {
+    label: 'Stale Sensor',
+    severity: 'WARNING',
+    alertType: 'STALE_DATA',
+    plantId: 'OBAJANA-01',
+    machineId: 'COOLER-B',
+    message: 'Cooler-B telemetry stream has stopped. Sensor may be offline.',
+    color: 'text-amber-400',
+    bg: 'bg-amber-900/20 hover:bg-amber-900/35 border-amber-500/30',
+  },
+  {
+    label: 'Out of Bounds',
+    severity: 'CRITICAL',
+    alertType: 'OUT_OF_BOUNDS',
+    plantId: 'GBOKO-01',
+    machineId: 'KILN-A',
+    message: 'Temperature reading 1,420 °C exceeds safe operating limit of 1,380 °C.',
+    color: 'text-crimson-400',
+    bg: 'bg-crimson-900/20 hover:bg-crimson-900/35 border-crimson-500/30',
+  },
+  {
+    label: 'Info: Shift Change',
+    severity: 'INFO',
+    alertType: 'SHIFT_CHANGE',
+    plantId: 'OBAJANA-01',
+    machineId: 'MILL-02',
+    message: 'Scheduled shift handover at 15:00 — daily calibration check initiated.',
+    color: 'text-sapphire-400',
+    bg: 'bg-sapphire-900/20 hover:bg-sapphire-900/35 border-sapphire-500/30',
+  },
+];
+
 
 const SEVERITY_CONFIG = {
   CRITICAL: {
@@ -39,6 +101,35 @@ function formatDuration(from, to) {
 
 export default function Alerts({ alerts, acknowledgeAlert }) {
   const [filter, setFilter] = useState('ALL'); // ALL | ACTIVE | CLEARED | ACKNOWLEDGED
+  const [simOpen, setSimOpen] = useState(false);
+  const [firing, setFiring] = useState(null); // scenario label currently being fired
+
+  const fireScenario = useCallback(async (scenario) => {
+    setFiring(scenario.label);
+    try {
+      await fetch(`${API}/simulate/alert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scenario),
+      });
+    } catch (e) {
+      console.error('Simulate alert failed:', e);
+    } finally {
+      setTimeout(() => setFiring(null), 600);
+    }
+  }, []);
+
+  const clearAll = useCallback(async () => {
+    for (const s of SCENARIOS) {
+      try {
+        await fetch(`${API}/simulate/clear-alert`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ alertType: s.alertType, plantId: s.plantId, machineId: s.machineId }),
+        });
+      } catch (_) {}
+    }
+  }, []);
 
   const filtered = alerts.filter((a) => {
     if (filter === 'ACTIVE') return !a.cleared && !a.acknowledged;
@@ -69,6 +160,60 @@ export default function Alerts({ alerts, acknowledgeAlert }) {
             <span className="text-sm font-mono font-medium text-crimson-400">
               {counts.active} active alert{counts.active !== 1 ? 's' : ''} require attention
             </span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Simulate Alerts Panel ───────────────────────────────── */}
+      <div className="glass-card border border-dashed border-white/10 overflow-hidden">
+        <button
+          onClick={() => setSimOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/3 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <FlaskConical className="w-4 h-4 text-gold-300" />
+            <span className="text-sm font-mono font-medium text-gold-300 uppercase tracking-wider">
+              Simulate Alerts
+            </span>
+            <span className="text-xs font-mono text-muted">
+              — fire synthetic events for testing
+            </span>
+          </div>
+          <ChevronDown
+            className={`w-4 h-4 text-muted transition-transform duration-200 ${simOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {simOpen && (
+          <div className="px-5 pb-5 space-y-4 border-t border-white/5 pt-4">
+            <p className="text-xs font-mono text-muted">
+              Click a scenario to broadcast it via WebSocket — it appears instantly in the feed below.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {SCENARIOS.map((s) => (
+                <button
+                  key={s.label}
+                  onClick={() => fireScenario(s)}
+                  disabled={firing === s.label}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-mono font-medium transition-all duration-200 ${s.bg} ${s.color} disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <Zap className={`w-3.5 h-3.5 ${firing === s.label ? 'animate-pulse' : ''}`} />
+                  {firing === s.label ? 'Firing…' : s.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 pt-1 border-t border-white/5">
+              <button
+                onClick={clearAll}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-xs font-mono text-muted hover:text-white hover:border-white/20 transition-all duration-200"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                Clear All Simulated
+              </button>
+              <span className="text-xs font-mono text-muted">
+                Sends ALERT_CLEARED for each scenario
+              </span>
+            </div>
           </div>
         )}
       </div>

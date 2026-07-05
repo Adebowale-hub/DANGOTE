@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#0D0F14"/>
+
+  <!-- Glow layer behind bars -->
+  <rect x="9" y="34" width="10" height="20" rx="2" fill="#3B82F6" opacity="0.15"/>
+  <rect x="22" y="26" width="10" height="28" rx="2" fill="#3B82F6" opacity="0.15"/>
+  <rect x="35" y="18" width="10" height="36" rx="2" fill="#3B82F6" opacity="0.15"/>
+  <rect x="48" y="10" width="10" height="44" rx="2" fill="#F59E0B" opacity="0.15"/>
+
+  <!-- Bar chart bars -->
+  <rect x="9" y="34" width="10" height="20" rx="2" fill="#3B82F6" opacity="0.85"/>
+  <rect x="22" y="26" width="10" height="28" rx="2" fill="#3B82F6" opacity="0.85"/>
+  <rect x="35" y="18" width="10" height="36" rx="2" fill="#3B82F6" opacity="0.85"/>
+
+  <!-- Tall gold bar at the right (peak) -->
+  <rect x="48" y="10" width="10" height="44" rx="2" fill="#F59E0B" opacity="0.9"/>
+
+  <!-- Trend line -->
+  <polyline
+    points="14,38  27,29  40,21  53,12"
+    stroke="#F59E0B"
+    stroke-width="2.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.95"
+  />
+
+  <!-- Peak dot (crimson) with glow -->
+  <circle cx="53" cy="12" r="5" fill="#EF4444" opacity="0.25"/>
+  <circle cx="53" cy="12" r="3.2" fill="#EF4444"/>
+
+  <!-- Small tick dot on each bar top -->
+  <circle cx="14" cy="34" r="1.8" fill="#60A5FA"/>
+  <circle cx="27" cy="26" r="1.8" fill="#60A5FA"/>
+  <circle cx="40" cy="18" r="1.8" fill="#60A5FA"/>
+</svg>
